@@ -1,0 +1,621 @@
+<?php
+require_once '../controllers/CategoriaController.php';
+
+$categoriaController = new CategoriaController();
+$categorias = $categoriaController->listAll(); // Obtiene las categorías del controlador
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logística y Distribución</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --background-image-light: url('../images/5082238.jpg');
+            --background-image-dark: url('../images/5137894.jpg'); /* Imagen para el modo oscuro */
+            --title-color-light: #000;
+            --title-color-dark: #fff;
+        }
+        body {
+            background: var(--background-image-light) no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 95%;     
+            transition: all 0.3s ease-in-out;
+        }
+
+        body.dark-mode {
+            background: var(--background-image-dark) no-repeat center center fixed;
+        }
+        .navbar {
+            background: linear-gradient(16deg, rgba(30, 126, 52, 0.9), rgba(40, 167, 69, 0.9)); /* Degradado verde semitransparente */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #fff !important;
+        }
+        .nav-link {
+            font-size: 1rem;
+            color: #fff !important;
+            margin-right: 15px;
+        }
+        .nav-link:hover {
+            color: #d4edda !important;
+        }
+        h1 {
+            text-align: center;
+            font-weight: bold;
+            color: #fff; /* Cambia el título a blanco para que contraste con la imagen */
+            margin: 30px 0;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombra para mejor visibilidad */
+        }
+        #map {
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid #28a745;
+        }
+        footer {
+            background: linear-gradient(45deg, rgba(33, 136, 56, 0.9), rgba(40, 167, 69, 0.9)); /* Degradado inverso */
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: #d4edda;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #fff;
+        }
+        .icon {
+            margin-right: 10px;
+            color: #fff;
+        }
+        /* Botones personalizados */
+        .btn-custom {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            background-color: #218838;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+
+
+
+
+
+
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+            <img src="../images/logo_logis_ok.png" alt="Logo"style="width: 80px; height: auto;">
+                <i class="fas fa-truck icon"></i>Logística y Distribución (Usuario)
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../views/categorias_user.php">
+                            <i class="fas fa-boxes icon"></i>Categorías
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../views/centros_user.php">
+                            <i class="fas fa-warehouse icon"></i>Centros
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../views/rutas_user.php">
+                            <i class="fas fa-route icon"></i>Rutas
+                        </a>
+                    </li>
+                    
+                    <!-- Aquí agregamos el menú desplegable con checkboxes -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter icon"></i> Filtrar Categorías
+                        </a>
+                        <ul class="dropdown-menu p-3" aria-labelledby="categoryDropdown">
+                            <form id="filterPointsForm">
+                                <!-- Checkbox para "Ninguno" -->
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="noneOption" onchange="handleNoneOption()">
+                                    <label class="form-check-label" for="noneOption">
+                                        Ninguno
+                                    </label>
+                                </div>
+                                <!-- Checkbox para "Todos" 
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="noneOption" onchange="loadPoints(0)">
+                                    <label class="form-check-label" for="noneOption">
+                                        Todos
+                                    </label>
+                                </div>-->
+
+                                <!-- Checkboxes dinámicos -->
+                                <?php foreach ($categorias as $categoria): ?>
+                                    <li>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="categories[]" id="categoria-<?= $categoria['id_categoria'] ?>" value="<?= $categoria['id_categoria'] ?>" onchange="filterPoints()">
+                                            <label class="form-check-label" for="categoria-<?= $categoria['id_categoria'] ?>">
+                                                <?= htmlspecialchars($categoria['nombre'], ENT_QUOTES, 'UTF-8') ?>
+                                            </label>
+                                        </div>
+                                    </li>
+                                <?php endforeach; ?>
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn-outline-light ms-3" onclick="toggleDarkMode()">Modo Oscuro</button>
+        </div>
+        
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <h1 style="color: white; text-shadow: 1px 1px 10px black, -1px -1px 10px black;">
+            <i class="fas fa-map-marked-alt"></i> Sistema de Logística y Distribución</h1>
+        <div id="map" class="rounded"></div>
+
+        <div style="margin: 10px; display: flex; justify-content: center; gap: 10px;">
+            <button id="togglePolygons" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px;">
+                Polígonos
+            </button>
+            <button id="togglePoints" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px;">
+                Puntos
+            </button>
+            <button id="toggleRoutes" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px;">
+                Rutas
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para agregar punto -->
+    <div class="modal fade" id="addPointModal" tabindex="-1" aria-labelledby="addPointModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="addPointForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPointModalLabel">Agregar Nuevo Punto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="background-color: #ffffff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                        <div class="row g-4">
+                            <!-- Primera columna -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control border-0 shadow-sm" id="nombre" name="nombre" placeholder="Nombre" required>
+                                    <label for="nombre" style="color: #555;">Nombre</label>
+                                </div>
+                                <div class="form-floating mt-3">
+                                    <textarea class="form-control border-0 shadow-sm" id="descripcion" name="descripcion" placeholder="Descripción" style="height: 120px;" required></textarea>
+                                    <label for="descripcion" style="color: #555;">Descripción</label>
+                                </div>
+                                <div class="form-floating mt-3">
+                                    <select class="form-select border-0 shadow-sm" id="id_categoria" name="id_categoria" required>
+                                        <?php foreach ($categorias as $categoria): ?>
+                                            <option value="<?= htmlspecialchars($categoria['id_categoria'], ENT_QUOTES, 'UTF-8') ?>">
+                                                <?= htmlspecialchars($categoria['nombre'], ENT_QUOTES, 'UTF-8') ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <label for="id_categoria" style="color: #555;">Categoría</label>
+                                </div>
+                                <div class="form-floating mt-3">
+                                    <input type="text" class="form-control border-0 shadow-sm" id="horario_operacion" name="horario_operacion" placeholder="Horario Operación" required>
+                                    <label for="horario_operacion" style="color: #555;">Horario Operación</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Segunda columna -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control border-0 shadow-sm" id="capacidad" name="capacidad" placeholder="Capacidad" required>
+                                    <label for="capacidad" style="color: #555;">Capacidad</label>
+                                </div>
+                                <div class="form-floating mt-3">
+                                    <input type="text" class="form-control border-0 shadow-sm" id="tipos_recursos" name="tipos_recursos" placeholder="Tipos de Recursos" required>
+                                    <label for="tipos_recursos" style="color: #555;">Tipos de Recursos</label>
+                                </div>
+                                <div class="form-floating mt-3">
+                                    <input type="text" class="form-control border-0 shadow-sm" id="zona_cobertura" name="zona_cobertura" placeholder="Zona de Cobertura" required>
+                                    <label for="zona_cobertura" style="color: #555;">Zona de Cobertura</label>
+                                </div>
+                                <div class="form-floating mt-3">
+                                    <input type="text" class="form-control border-0 shadow-sm" id="contacto" name="contacto" placeholder="Contacto" required>
+                                    <label for="contacto" style="color: #555;">Contacto</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="latitud" name="latitud">
+                        <input type="hidden" id="longitud" name="longitud">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="confirmSave()">Confirmar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeAndResetForm()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Interactar con el Mapa -->
+    <script>
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+        }
+
+        let map, tempMarker;
+        let markers = [];
+        let polygonLayers = []; // Array para manejar los polígonos cargados
+        let pointLayers = []; // Array para manejar los puntos cargados
+        let polygonsVisible = true;
+        let pointsVisible = true;
+
+        let routeLayer; // Variable para manejar la capa de rutas
+        let routesVisible = true; // Control de visibilidad de rutas
+
+        function initMap() {
+            const tarija = { lat: -21.5355, lng: -64.7296 };
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: tarija,
+                zoom: 13,
+
+            });
+
+            // Cargar dinámicamente todas las capas (polígonos y puntos)
+            $.get('../controllers/getGeoJsonFiles.php', function (files) {
+                files.forEach(file => {
+                    if (file.includes("poligono")) {
+                        const layerName = getLayerNameFromFile(file);
+                        loadPolygonLayer(file, layerName);
+                    } else if (file.includes("puntos")) {
+                        const layerName = getPointLayerNameFromFile(file);
+                        loadPointLayer(file, layerName);
+                    } else if (file.includes("lineas_rutas")) {
+                    loadRouteLayer(file); // Cargar la capa de rutas
+                }
+                });
+            }).fail(() => {
+                console.error("Error al cargar las capas GeoJSON.");
+            });
+
+            // Botón para mostrar/ocultar polígonos
+            document.getElementById("togglePolygons").addEventListener("click", () => {
+                polygonsVisible = !polygonsVisible;
+                toggleLayersVisibility(polygonLayers, polygonsVisible);
+            });
+
+            // Botón para mostrar/ocultar puntos
+            document.getElementById("togglePoints").addEventListener("click", () => {
+                pointsVisible = !pointsVisible;
+                toggleLayersVisibility(pointLayers, pointsVisible);
+            });
+
+            // Botón para mostrar/ocultar rutas
+            document.getElementById("toggleRoutes").addEventListener("click", () => {
+                routesVisible = !routesVisible;
+                toggleLayersVisibility([routeLayer], routesVisible);
+            });
+
+            // Carga inicial (todas las categorías)
+            //loadPoints(0);
+            
+             // Agrega un listener para clic en el mapa
+            map.addListener("dblclick", (event) => {
+
+                if (tempMarker) tempMarker.setMap(null); // Elimina el marcador temporal previo si existe
+
+                // Agrega un nuevo marcador temporal
+                tempMarker = new google.maps.Marker({
+                    position: event.latLng, // Coordenadas del clic
+                    map: map,
+                });
+
+                // Asigna las coordenadas al formulario
+                document.getElementById("latitud").value = event.latLng.lat();
+                document.getElementById("longitud").value = event.latLng.lng();
+
+                // Muestra el modal para agregar un nuevo punto
+                const modal = new bootstrap.Modal(document.getElementById("addPointModal"));
+                modal.show();
+
+            });
+
+            // Maneja cambios en el filtro
+            document.getElementById('categoryFilter').addEventListener('change', (e) => {
+                const categoryId = e.target.value;
+                loadPoints(categoryId);
+            });
+
+            // Limpia el marcador temporal cuando se cierra el modal
+            $('#addPointModal').on('hidden.bs.modal', function () {
+                if (tempMarker) {
+                    tempMarker.setMap(null);
+                    tempMarker = null;
+                }
+            });
+        }
+
+        // Función para limpiar marcadores del mapa
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+        }
+
+        // Función para limpiar formulario y marcador temporal
+        function resetFormAndMarker() {
+            $("#addPointForm")[0].reset(); 
+            if (tempMarker) {
+                tempMarker.setMap(null); 
+                tempMarker = null;
+            }
+        }
+
+        function handleNoneOption() {
+            const noneOption = document.getElementById('noneOption');
+
+            if (noneOption.checked) {
+                // Desmarcar todos los demás checkboxes
+                $('input[name="categories[]"]').prop('checked', false);
+
+                // Mostrar el mapa en blanco
+                clearMarkers([]); // Llamar a la función para cargar un mapa sin puntos
+            }
+        }
+
+        function filterPoints() {
+            const noneOption = document.getElementById('noneOption');
+            // Si se selecciona cualquier otra categoría, desmarcar la opción "NINGUNO"
+            if (noneOption.checked) {
+                noneOption.checked = false;
+            }
+            // Obtener todas las categorías seleccionadas
+            const selectedCategories = $('input[name="categories[]"]:checked').map(function () {
+                return this.value;
+            }).get();
+            console.log("Categorías seleccionadas:", selectedCategories);
+            // Llamar a la función para cargar los puntos seleccionados
+            loadPoints(selectedCategories);
+        }
+
+        // Actualiza la función loadPoints para aceptar las categorías seleccionadas
+        function loadPoints(selectedCategories = []) {
+            $.post('../controllers/getPoints.php', { categories: selectedCategories }, function (data) {
+                clearMarkers(); // Limpia los marcadores anteriores
+
+                if (!data || data.length === 0) {
+                    alert("No se encontraron puntos para las categorías seleccionadas.");
+                    return;
+                }
+
+                data.forEach(point => {
+                    let iconUrl;
+
+                    // Asigna un ícono diferente basado en la categoría
+                    switch (point.id_categoria) {
+                        case 1: // Categoría fábricas
+                            iconUrl = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"; // Ícono azul
+                            break;
+                        case 2: // Categoría hospitales
+                            iconUrl = "https://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Ícono verde
+                            break;
+                        case 3: // Categoría escuelas
+                            iconUrl = "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"; // Ícono amarillo
+                            break;
+                        case 4: // Categoría mercados
+                            iconUrl = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Ícono morado
+                            break;
+                        default: // Categoría por defecto
+                            iconUrl = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Ícono rojo
+                            break;
+                    }
+
+                    const marker = new google.maps.Marker({
+                        position: { lat: parseFloat(point.latitud), lng: parseFloat(point.longitud) },
+                        map: map,
+                        title: point.nombre,
+                        icon: iconUrl, // Asigna el ícono correspondiente
+                    });
+
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                            <h5>${point.nombre}</h5>
+                            <p><b>Horario:</b> ${point.horario_operacion}</p>
+                            <p><b>Capacidad:</b> ${point.capacidad}</p>
+                            <p><b>Contacto:</b> ${point.contacto}</p>
+                            <p><b>Tipo de recursos:</b> ${point.tipos_recursos || "No especificado"}</p>
+                        `,
+                    });
+
+                    marker.addListener("click", () => infoWindow.open(map, marker));
+                    markers.push(marker);
+                });
+            }, 'json').fail(() => alert("Error al cargar los puntos."));
+        }
+
+        // Función para mostrar la confirmación y manejar "Sí" o "No"
+        function confirmSave() {
+            if (confirm("¿Estás seguro de que deseas guardar este punto?")) {
+                submitForm(); // Guarda el punto
+                resetFormAndMarker(); // Limpia y cierra el formulario
+            } else {
+                alert("El formulario no se ha enviado.");
+            }
+        }
+        
+        function submitForm() {
+            const formData = $("#addPointForm").serialize(); // Serializar datos del formulario
+
+            $.post("../controllers/CentroLogisticoController.php?action=createFromMap", formData, function (response) {
+                try {
+                    const res = JSON.parse(response);
+                    console.log("Respuesta del servidor:", res);
+                    if (res.success) {
+                        alert(res.message); 
+                        loadPoints(); 
+                    } else {
+                        alert("Error: " + res.message); 
+                    }
+                } catch (error) {
+                    console.error("Error al procesar la respuesta:", error);  
+                }
+            }).fail(function () {
+                alert("Error en la conexión con el servidor.");
+            });
+        }
+
+        // Función para limpiar y cerrar el formulario
+        function resetFormAndMarker() {
+            const modalElement = document.getElementById("addPointModal");
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide(); 
+            }
+            $("#addPointForm")[0].reset(); 
+            if (tempMarker) {
+                tempMarker.setMap(null); 
+            }
+        }
+
+        // Evento para cargar puntos cuando se cierre el modal
+        document.getElementById("addPointModal").addEventListener("hidden.bs.modal", function () {
+            loadPoints();
+        });
+
+        // Función para cargar y estilizar polígonos
+        function loadPolygonLayer(fileName, layerName) {
+            const layer = new google.maps.Data();
+            layer.loadGeoJson(fileName); // Usa la ruta proporcionada por el controlador
+
+            layer.setStyle(() => {
+                switch (layerName) {
+                    case "poligono_fabricas":
+                        return { fillColor: "#FF0000", strokeColor: "#990000", fillOpacity: 0.5, strokeWeight: 2 };
+                    case "poligono_importadoras":
+                        return { fillColor: "#00FF00", strokeColor: "#009900", fillOpacity: 0.5, strokeWeight: 2 };
+                    case "poligono_distribuidoras":
+                        return { fillColor: "#0000FF", strokeColor: "#000099", fillOpacity: 0.5, strokeWeight: 2 };
+                    case "poligono_comercializadoras":
+                        return { fillColor: "#FFFF00", strokeColor: "#999900", fillOpacity: 0.5, strokeWeight: 2 };
+                    default:
+                        return { fillColor: "#FFFFFF", strokeColor: "#CCCCCC", fillOpacity: 0.3, strokeWeight: 1 };
+                }
+            });
+
+            layer.setMap(map);
+            polygonLayers.push(layer); // Guardar la capa en el array
+
+        }
+
+        // Función para cargar y estilizar puntos
+        function loadPointLayer(fileName, layerName) {
+            const layer = new google.maps.Data();
+            layer.loadGeoJson(fileName); // Usa la ruta proporcionada por el controlador
+            layer.setStyle(() => {
+                switch (layerName) {
+                    case "puntos_fabricas":
+                        return { icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png" };
+                    case "puntos_importadoras":
+                        return { icon: "https://maps.google.com/mapfiles/ms/icons/green-dot.png" };
+                    case "puntos_distribuidoras":
+                        return { icon: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png" };
+                    case "puntos_comercializadoras":
+                        return { icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png" };
+                    default:
+                        return { icon: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png" };
+                }
+            });
+            layer.setMap(map);
+            pointLayers.push(layer); // Guardar la capa en el array
+        }
+
+        // Función para alternar la visibilidad de capas
+        function toggleLayersVisibility(layers, visible) {
+            layers.forEach(layer => {
+                layer.setMap(visible ? map : null);
+            });
+        }
+
+        // Funciones auxiliares para determinar nombres de capas
+        function getLayerNameFromFile(fileName) {
+            if (fileName.includes("fabricas")) return "poligono_fabricas";
+            if (fileName.includes("importadoras")) return "poligono_importadoras";
+            if (fileName.includes("distribuidoras")) return "poligono_distribuidoras";
+            if (fileName.includes("comercializadoras")) return "poligono_comercializadoras";
+            return "default";
+        }
+
+        function getPointLayerNameFromFile(fileName) {
+            if (fileName.includes("fabricas")) return "puntos_fabricas";
+            if (fileName.includes("importadoras")) return "puntos_importadoras";
+            if (fileName.includes("distribuidoras")) return "puntos_distribuidoras";
+            if (fileName.includes("comercializadoras")) return "puntos_comercializadoras";
+            return "default";
+        }
+
+        // Función para cargar la capa de rutas
+        function loadRouteLayer(fileName) {
+            routeLayer = new google.maps.Data();
+            routeLayer.loadGeoJson(fileName); // Cargar el archivo GeoJSON de rutas
+            routeLayer.setStyle({
+                strokeColor: "#FF5733", // Color de la línea
+                strokeOpacity: 1.0,
+                strokeWeight: 4 // Grosor de la línea
+            });
+            routeLayer.setMap(map); // Mostrar en el mapa
+        }
+
+        // Función para alternar la visibilidad de capas
+        function toggleLayersVisibility(layers, visible) {
+            layers.forEach(layer => {
+                if (layer) {
+                    layer.setMap(visible ? map : null);
+                }
+            });
+        }
+
+    </script>
+
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY_DE_GOOGLE_MAPS_AQUI&callback=initMap" async defer></script>
+    
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Logística y Distribución. By Team Hijitas...!!! <a href="#">Política de Privacidad</a></p>
+    </footer>
+</body>
+
+</html>

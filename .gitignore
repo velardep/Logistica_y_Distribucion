@@ -1,0 +1,5 @@
+# Ignorar archivos con datos sensibles
+/config/db.php
+/public/index.php
+/public/index_user.php
+/sql/LogisticaDistribucion.sql

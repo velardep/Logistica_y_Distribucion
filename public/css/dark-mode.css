@@ -1,0 +1,19 @@
+body.dark-mode {
+    background: url('../images/5137894.jpg') no-repeat center center fixed; /* Fondo oscuro */
+    background-size: cover;
+    color: white;
+}
+
+.navbar.dark-mode {
+    background: linear-gradient(16deg, rgba(0, 0, 0, 0.9), rgba(40, 40, 40, 0.9));
+}
+
+footer.dark-mode {
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.9), rgba(40, 40, 40, 0.9));
+    color: white;
+}
+
+h1.dark-mode {
+    color: white;
+    text-shadow: 1px 1px 3px black, -1px -1px 3px black;
+}
