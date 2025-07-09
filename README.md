@@ -1,10 +1,17 @@
+<p align="center">
+  <a href="https://www.php.net/" target="_blank">
+    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg" width="120" alt="PHP Logo">
+  </a>
+</p>
+
+
 # Sistema de Logística y Distribución
 
 Sistema web desarrollado en PHP para gestionar centros logísticos, rutas de distribución y capas geoespaciales sobre un mapa interactivo utilizando la API de Google Maps y archivos creados en QGIS.
 
 ---
 
-## 📌 Descripción
+## Descripción
 
 Este sistema permite visualizar y gestionar la red logística de una organización a través de:
 
@@ -17,7 +24,7 @@ Este sistema permite visualizar y gestionar la red logística de una organizaci�
 ---
 
 
-## 🔧 Tecnologías usadas
+## Tecnologías usadas
 
 - **PHP 8+** (sin frameworks, desarrollo puro)
 - **PostgreSQL** como motor de base de datos
@@ -28,7 +35,7 @@ Este sistema permite visualizar y gestionar la red logística de una organizaci�
 
 ---
 
-## 🚀 Instalación y ejecución
+## Instalación y ejecución
 
 ### 1. Requisitos
 
@@ -68,7 +75,7 @@ Este archivo contiene las tablas, relaciones y datos actuales, incluidos los usu
 
 ---
 
-## 🧪 Uso
+## Uso
 
 ```md
 Coloca la carpeta del proyecto dentro de:
@@ -93,7 +100,7 @@ http://localhost/Logistica_y_Distribucion/public/index.php
 
 ---
 
-## 🗺️ Capas geoespaciales (GeoJSON)
+## Capas geoespaciales (GeoJSON)
 
 ```md
 Las capas se encuentran en la carpeta `capas/` y fueron generadas en QGIS. Para agregar nuevas capas (por ejemplo, estaciones, hospitales, etc.):
@@ -108,7 +115,7 @@ El sistema reconocerá las capas nuevas dinámicamente.
 
 ---
 
-## 👥 Usuarios predeterminados
+## Usuarios predeterminados
 
 ```md
 Los usuarios ya están insertados en el archivo `.sql` y podrás iniciar sesión con alguno para probar la plataforma.
@@ -116,7 +123,7 @@ Los usuarios ya están insertados en el archivo `.sql` y podrás iniciar sesión
 
 ---
 
-## ⚠️ Notas importantes
+## Notas importantes
 
 ```md
 - NO se están usando migraciones (como en Laravel o Django), por lo tanto, la base de datos debe ser restaurada manualmente desde el archivo `.sql`.
