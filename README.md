@@ -16,7 +16,7 @@ Este sistema permite visualizar y gestionar la red logística de una organizaci�
 
 ---
 
-````md
+
 ## 🔧 Tecnologías usadas
 
 - **PHP 8+** (sin frameworks, desarrollo puro)
@@ -126,4 +126,4 @@ Los usuarios ya están insertados en el archivo `.sql` y podrás iniciar sesión
 ```
 
 ```
-```
+
