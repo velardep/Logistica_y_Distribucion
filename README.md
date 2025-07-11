@@ -107,7 +107,7 @@ A continuación, algunas vistas del sistema en funcionamiento:
 </p>
 
 <p align="center">
-  <img src="demo/panlel_administrador.png" alt="Pantalla de inicio de sesión" width="600"><br>
+  <img src="demo/panel_administrador.png" alt="Pantalla de inicio de sesión" width="600"><br>
     <em>Panel de administración</em>
 </p>
 
