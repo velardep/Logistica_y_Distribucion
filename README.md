@@ -97,6 +97,39 @@ http://localhost/Logistica_y_Distribucion/public/index.php
 ```md
 ⚠️ Asegúrate de renombrar correctamente los archivos `.example` para que el sistema funcione.
 ```
+## Capturas de pantalla
+
+A continuación, algunas vistas del sistema en funcionamiento:
+
+<p align="center">
+  <img src="demo/login.png" alt="Registro de usuario" width="600"><br>
+    <em>Pantalla de inicio de sesión</em>
+</p>
+
+<p align="center">
+  <img src="demo/panlel_administrador.png" alt="Pantalla de inicio de sesión" width="600"><br>
+    <em>Panel de administración</em>
+</p>
+
+<p align="center">
+  <img src="demo/panel_usuario.png" alt="Panel de administración" width="600"><br>
+    <em>Panel de usuarios</em>
+</p>
+
+<p align="center">
+  <img src="demo/filtro_categorias.png" alt="Panel de administración" width="600"><br>
+    <em>Filtro por Categorias</em>
+</p>
+
+<p align="center">
+  <img src="demo/gestion_centros.png" alt="Panel de administración" width="600"><br>
+    <em>Gestion de Centros de Distribucion</em>
+</p>
+
+<p align="center">
+  <img src="demo/gestion_rutas.png" alt="Panel de administración" width="600"><br>
+    <em>Gestion de Rutas</em>
+</p>
 
 ---
 
